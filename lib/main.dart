@@ -53,3 +53,4 @@ class MyApp extends StatelessWidget {
 }
 
 // personalização de icones do VS - aula 202
+// montar api fake - json-server - aula 260

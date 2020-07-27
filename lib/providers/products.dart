@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shop/data/dummy_data.dart';
 import 'package:shop/providers/product.dart';
 
@@ -18,6 +20,22 @@ class Products with ChangeNotifier {
   }
 
   void addProduct(Product newProduct) {
+    // O Firebase tem uma regra, onde deve-se colocar no final da URL
+    // qqcoisa.json
+    const url = 'https://flutter-cod3r-3f1ac.firebaseio.com/products.json';
+
+    http.post(
+      url,
+      //  json.encode: transforma um map em json
+      body: json.encode({
+        'title': newProduct.title,
+        'description': newProduct.description,
+        'price': newProduct.price,
+        'imageUrl': newProduct.imageUrl,
+        'isFavorite': newProduct.isFavorite,
+      }),
+    );
+
     _items.add(Product(
       id: Random().nextDouble().toString(),
       title: newProduct.title,
