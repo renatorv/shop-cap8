@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -19,12 +18,12 @@ class Products with ChangeNotifier {
     return _items.length;
   }
 
-  void addProduct(Product newProduct) {
+  Future<void> addProduct(Product newProduct) {
     // O Firebase tem uma regra, onde deve-se colocar no final da URL
     // qqcoisa.json
     const url = 'https://flutter-cod3r-3f1ac.firebaseio.com/products.json';
 
-    http.post(
+    return http.post(
       url,
       //  json.encode: transforma um map em json
       body: json.encode({
@@ -34,17 +33,21 @@ class Products with ChangeNotifier {
         'imageUrl': newProduct.imageUrl,
         'isFavorite': newProduct.isFavorite,
       }),
-    );
+    ).then((response) {
+      print(json.decode(response.body)['name']);
+      _items.add(
+        Product(
+          //id: Random().nextDouble().toString(),
+          id: json.decode(response.body)['name'],
+          title: newProduct.title,
+          description: newProduct.description,
+          price: newProduct.price,
+          imageUrl: newProduct.imageUrl,
+        ),
+      );
 
-    _items.add(Product(
-      id: Random().nextDouble().toString(),
-      title: newProduct.title,
-      description: newProduct.description,
-      price: newProduct.price,
-      imageUrl: newProduct.imageUrl,
-    ));
-
-    notifyListeners();
+      notifyListeners();
+    });
   }
 
   void updateProduct(Product product) {
