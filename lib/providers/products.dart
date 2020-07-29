@@ -18,12 +18,15 @@ class Products with ChangeNotifier {
     return _items.length;
   }
 
-  Future<void> addProduct(Product newProduct) {
+  // Uma função async, SEMPRE deverá retornar um Future
+  Future<void> addProduct(Product newProduct) async {
     // O Firebase tem uma regra, onde deve-se colocar no final da URL
     // qqcoisa.json
     const url = 'https://flutter-cod3r-3f1ac.firebaseio.com/products.json';
 
-    return http.post(
+    // uma instrução marcada como await espera o retorno de sua execução,
+    // ai esse retorno pode ser atribuida a uma variável
+    final response = await http.post(
       url,
       //  json.encode: transforma um map em json
       body: json.encode({
@@ -31,23 +34,22 @@ class Products with ChangeNotifier {
         'description': newProduct.description,
         'price': newProduct.price,
         'imageUrl': newProduct.imageUrl,
-        'isFavorite': newProduct.isFavorite,
+        'isFavorite': newProduct.isFavorite
       }),
-    ).then((response) {
-      print(json.decode(response.body)['name']);
-      _items.add(
-        Product(
-          //id: Random().nextDouble().toString(),
-          id: json.decode(response.body)['name'],
-          title: newProduct.title,
-          description: newProduct.description,
-          price: newProduct.price,
-          imageUrl: newProduct.imageUrl,
-        ),
-      );
+    );
 
-      notifyListeners();
-    });
+    _items.add(
+      Product(
+        //id: Random().nextDouble().toString(),
+        id: json.decode(response.body)['name'],
+        title: newProduct.title,
+        description: newProduct.description,
+        price: newProduct.price,
+        imageUrl: newProduct.imageUrl,
+      ),
+    );
+
+    notifyListeners();
   }
 
   void updateProduct(Product product) {
